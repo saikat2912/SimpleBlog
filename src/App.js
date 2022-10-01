@@ -5,12 +5,16 @@ import {BrowserRouter as Router,Routes,Route,Link } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import CreatePost from './pages/CreatePost';
+import ContactUs from './pages/ContactUs';
+import writeBlog from './pages/writeBlog';
+import searchBlogger from './pages/searchBlogger';
 import { signOut } from "firebase/auth"
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-
+import NavBar from './components/NavBar';
 import {auth} from "./firebase-config"
+import BlogsPage from './pages/BlogsPage';
 
 function App() {
   const [isAuth,setIsAuth] =useState(false);
@@ -25,17 +29,23 @@ function App() {
   }
   return (
     <Router>
-      
-      <nav>
-        <Link to="/">Home</Link>
-        <Link to="/createPost">Create Post</Link>
-        {!isAuth?<Link to="/login">Login</Link>:<button onClick={signOutUser}>Log Out</button>}
-      </nav>
+      <Navbar bg="dark" variant="dark">
+        <Container>
+          <NavBar isAuth={isAuth} signOutUser={signOutUser}/>
+          
+        </Container>
+      </Navbar>
+      <div>
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/login" element={<Login setIsAuth={setIsAuth}/>}/>
         <Route path="/createPost" element={<CreatePost isAuth={isAuth}/>}/>
+        <Route path="/contactUs" element={<ContactUs isAuth={isAuth}/>}/>
+        <Route path="/writeABlog" element={<writeBlog isAuth={isAuth}/>}/>
+        <Route path="/searchBlogger" element={<searchBlogger isAuth={isAuth}/>}/>
+        <Route path="/blogs" element={<BlogsPage isAuth={isAuth}/>}/>
       </Routes>
+      </div>
     </Router>
   );
 }

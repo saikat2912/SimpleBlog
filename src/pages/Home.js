@@ -1,42 +1,53 @@
-import React, { useEffect ,useState} from 'react'
-import {getDocs,collection} from 'firebase/firestore'
-import {auth, db} from '../firebase-config'
-import {useNavigate} from "react-router-dom"
+import React, { useEffect, useState } from "react";
+import { getDocs, collection } from "firebase/firestore";
+import { auth, db } from "../firebase-config";
+import { useNavigate } from "react-router-dom";
+import NavBar from "../components/NavBar";
+import MidHome from "../components/MidHome";
+import Blogs from "../components/Blogs";
+import Row from "react-bootstrap/Row";
+import Card from "react-bootstrap/Card";
+import Col from "react-bootstrap/Col";
 
 function Home() {
+  const [postLists, setPostList] = useState([]);
+  const postCollectionsRef = collection(db, "posts");
+  const [isVal, setIsVal] = useState(false);
 
-    const [postLists,setPostList] = useState([]);
-    const postCollectionsRef= collection(db,"posts")
+  const navigate = useNavigate();
+  const sentToCreatePost = () => {
+    navigate("/createPost");
+  };
+  const getData = async () => {
+    const data = await getDocs(postCollectionsRef);
+    setPostList(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    setIsVal(true);
+  };
 
-    const navigate=useNavigate();
-    const sentToCreatePost =() =>{
-        navigate("/createPost")
-    }
-    const getData=async() =>{
-        const data= await getDocs(postCollectionsRef);
-        setPostList(data.docs.map((doc) =>({...doc.data(),id:doc.id})))
-    }
-
-    useEffect(()=>{
-        getData();
-    })
+  useEffect(() => {
+    getData();
+  }, isVal);
   return (
-    <div className='homePage'>
-        <h2>Welcome {auth.currentUser.displayName}</h2>
-        <div className="postList">
-        {postLists.map((item)=>{
-            return (<div>
-            <h4>{item.title}</h4>
-            <div><p>{item.postText}</p></div>
-            </div>);
-        })}
-        </div>
-
-    <div>
+    <div className="homePage">
+      <div>
+        <MidHome sentToCreatePost={sentToCreatePost}/>
+      </div>
+      <div className="postList" style={{ height: "500px" }}>
+        {console.log("postlists is ", postLists)}
+        <Row>
+          {postLists.map((item) => {
+            return (
+                 <Blogs item={item} />
+               
+            );
+          })}
+        </Row>
+      </div>
+      <div>
         <button onClick={sentToCreatePost}>Create Post</button>
+      </div>
     </div>
-    </div>
-  )
+  );
 }
 
-export default Home
+export default Home;
